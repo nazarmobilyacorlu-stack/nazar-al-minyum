@@ -1,0 +1,134 @@
+:root {
+  --bg: #0f172a;
+  --card: #111827;
+  --muted: #94a3b8;
+  --text: #e5e7eb;
+  --primary: #22c55e;
+  --primary-700: #16a34a;
+  --border: #1f2937;
+  --accent: #0ea5e9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  background: linear-gradient(180deg, #0b1220, rgba(11,18,32,0.5));
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 10px;
+}
+
+.tab {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 10px;
+  font-weight: 600;
+  letter-spacing: .2px;
+}
+
+.tab.active {
+  background: #0b1220;
+  outline: 2px solid var(--accent);
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.view { display: none; }
+.view.active { display: block; }
+
+h1 {
+  font-size: 1.25rem;
+  margin: 12px 0 16px;
+}
+
+.form {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 560px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { color: var(--muted); font-size: .9rem; }
+.field input {
+  background: #0b1220;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 10px;
+}
+
+.results, .summary {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.result-row, .summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0b1220;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.summary-row.grand {
+  background: #0b1220;
+  outline: 2px solid var(--primary-700);
+}
+
+.whatsapp {
+  width: 100%;
+  margin-top: 16px;
+  background: var(--primary);
+  color: #052e16;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-weight: 700;
+}
+
+.footer {
+  margin: 40px 0 20px;
+  text-align: center;
+  color: var(--muted);
+}
+
+
