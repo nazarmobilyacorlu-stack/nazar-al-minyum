@@ -99,6 +99,10 @@ h1 {
   gap: 10px;
 }
 
+.items { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+.item { background: #0b1220; border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.add { width: 100%; margin-top: 10px; background: var(--accent); color: #001826; border: none; border-radius: 10px; padding: 12px; font-weight: 700; }
+
 .result-row, .summary-row {
   display: flex;
   align-items: center;
@@ -124,6 +128,10 @@ h1 {
   padding: 14px 16px;
   font-weight: 700;
 }
+
+.whatsapp.alt { background: #34d399; }
+.whatsapp-actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 16px; }
+@media (min-width: 560px) { .whatsapp-actions { grid-template-columns: 1fr 1fr; } }
 
 .footer {
   margin: 40px 0 20px;
