@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>nazar alüminyum</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header class="topbar">
+    <nav class="tabs" role="tablist" aria-label="Hesaplama Sekmeleri">
+      <button class="tab active" data-target="#cam" aria-selected="true" role="tab">Cam</button>
+      <button class="tab" data-target="#profil" aria-selected="false" role="tab">Profil</button>
+      <button class="tab" data-target="#ozet" aria-selected="false" role="tab">Özet</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section id="cam" class="view active" role="tabpanel" aria-labelledby="Cam">
+      <h1>Cam</h1>
+      <form class="form" id="camForm" autocomplete="on">
+        <div class="field">
+          <label for="camFirma">Firma</label>
+          <input type="text" id="camFirma" placeholder="Firma adı (opsiyonel)">
+        </div>
+        <div id="camItems" class="items">
+          <div class="item cam-item">
+            <div class="grid">
+              <div class="field">
+                <label>En (cm)</label>
+                <input class="cam-en" inputmode="decimal" type="number" step="0.1" min="0" placeholder="Örn: 120">
+              </div>
+              <div class="field">
+                <label>Boy (cm)</label>
+                <input class="cam-boy" inputmode="decimal" type="number" step="0.1" min="0" placeholder="Örn: 240">
+              </div>
+            </div>
+            <div class="grid">
+              <div class="field">
+                <label>Adet</label>
+                <input class="cam-adet" inputmode="numeric" type="number" step="1" min="0" placeholder="Örn: 5">
+              </div>
+              <div class="field">
+                <label>m² Birim Fiyatı</label>
+                <input class="cam-birim" inputmode="decimal" type="number" step="0.01" min="0" placeholder="Örn: 750">
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="button" id="btnAddCam" class="add">Yeni cam ölçüsü ekle</button>
+        <button type="button" id="btnCopyCamToProfil" class="copy">Ölçüleri kopyala</button>
+
+        <div class="results" id="camResults">
+          <div class="result-row"><span>Toplam Metrekare:</span><strong id="camToplamM2">0</strong> m²</div>
+          <div class="result-row"><span>Toplam Fiyat:</span><strong id="camToplamFiyat">0</strong></div>
+        </div>
+      </form>
+    </section>
+
+    <section id="profil" class="view" role="tabpanel" aria-labelledby="Profil">
+      <h1>Profil</h1>
+      <form class="form" id="profilForm" autocomplete="on">
+        <div id="profilItems" class="items">
+          <div class="item profil-item">
+            <div class="grid">
+              <div class="field">
+                <label>En (cm)</label>
+                <input class="profil-en" inputmode="decimal" type="number" step="0.1" min="0" placeholder="Örn: 120">
+              </div>
+              <div class="field">
+                <label>Boy (cm)</label>
+                <input class="profil-boy" inputmode="decimal" type="number" step="0.1" min="0" placeholder="Örn: 240">
+              </div>
+            </div>
+            <div class="grid">
+              <div class="field">
+                <label>Adet</label>
+                <input class="profil-adet" inputmode="numeric" type="number" step="1" min="0" placeholder="Örn: 10">
+              </div>
+              <div class="field">
+                <label>Profil Birim Fiyatı (m)</label>
+                <input class="profil-birim" inputmode="decimal" type="number" step="0.01" min="0" placeholder="Örn: 45">
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="button" id="btnAddProfil" class="add">Yeni profil ölçüsü ekle</button>
+
+        <div class="results" id="profilResults">
+          <div class="result-row"><span>Toplam Profil Metrajı:</span><strong id="profilMetraj">0</strong> m</div>
+          <div class="result-row"><span>Toplam Fiyat:</span><strong id="profilToplamFiyat">0</strong></div>
+        </div>
+      </form>
+    </section>
+
+    <section id="ozet" class="view" role="tabpanel" aria-labelledby="Özet">
+      <h1>Özet</h1>
+      <div class="summary">
+        <div class="summary-row"><span>Toplam Cam Fiyatı:</span><strong id="ozetCamToplam">0</strong></div>
+        <div class="summary-row"><span>Toplam Profil Fiyatı:</span><strong id="ozetProfilToplam">0</strong></div>
+        <div class="summary-row"><span>Ara Toplam (KDV hariç):</span><strong id="ozetAraToplam">0</strong></div>
+        <div class="summary-row"><span>KDV (%20):</span><strong id="ozetKdv">0</strong></div>
+        <hr>
+        <div class="summary-row grand"><span>Genel Toplam (KDV dahil):</span><strong id="ozetGenelToplam">0</strong></div>
+      </div>
+      <div class="whatsapp-actions">
+        <button id="btnWhatsappFull" class="whatsapp">Hepsini WhatsApp'la Gönder</button>
+        <button id="btnWhatsappTotal" class="whatsapp alt">Sadece Genel Fiyatı Gönder</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <small>© 2025 nazar alüminyum</small>
+  </footer>
+
+  <script src="app.js"></script>
+  
+</body>
+</html>
+
+
