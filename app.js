@@ -97,10 +97,44 @@
     container.appendChild(div);
   }
 
+  function ensureProfilRowCount(count) {
+    const container = $("#profilItems");
+    if (!container) return;
+    const current = container.querySelectorAll(".profil-item").length;
+    for (let i = current; i < count; i++) {
+      addProfilRow();
+    }
+  }
+
+  function copyCamToProfil() {
+    const camRows = $$(".cam-item");
+    if (camRows.length === 0) return;
+    ensureProfilRowCount(camRows.length);
+    const profilRows = $$(".profil-item");
+    camRows.forEach((camRow, idx) => {
+      const profilRow = profilRows[idx];
+      if (!profilRow) return;
+      const camEn = camRow.querySelector(".cam-en");
+      const camBoy = camRow.querySelector(".cam-boy");
+      const camAdet = camRow.querySelector(".cam-adet");
+      const profilEn = profilRow.querySelector(".profil-en");
+      const profilBoy = profilRow.querySelector(".profil-boy");
+      const profilAdet = profilRow.querySelector(".profil-adet");
+      if (profilEn && camEn) profilEn.value = camEn.value ?? "";
+      if (profilBoy && camBoy) profilBoy.value = camBoy.value ?? "";
+      if (profilAdet && camAdet) profilAdet.value = camAdet.value ?? "";
+    });
+    updateProfil();
+  }
+
   function setupCam() {
     $("#camItems").addEventListener("input", updateCam);
     $("#camItems").addEventListener("change", updateCam);
     $("#btnAddCam").addEventListener("click", () => { addCamRow(); updateCam(); });
+    const copyBtn = $("#btnCopyCamToProfil");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", copyCamToProfil);
+    }
     updateCam();
   }
 
