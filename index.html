@@ -46,6 +46,17 @@
                 <input class="cam-birim" inputmode="decimal" type="number" step="0.01" min="0" placeholder="Örn: 750">
               </div>
             </div>
+            <div class="grid">
+              <div class="field">
+                <label>Girdi m² Fiyatı</label>
+                <input class="cam-girdi" inputmode="decimal" type="number" step="0.01" min="0" placeholder="Örn: 500">
+              </div>
+            </div>
+            <div class="row-stats cam-stats">
+              <div><span>Satır Toplam:</span><strong class="cam-satir-toplam">0</strong></div>
+              <div><span>Girdi Tutarı:</span><strong class="cam-satir-maliyet">0</strong></div>
+              <div class="profit"><span>Kar:</span><strong class="cam-satir-kar">0</strong></div>
+            </div>
           </div>
         </div>
         <button type="button" id="btnAddCam" class="add">Yeni cam ölçüsü ekle</button>
@@ -54,6 +65,7 @@
         <div class="results" id="camResults">
           <div class="result-row"><span>Toplam Metrekare:</span><strong id="camToplamM2">0</strong> m²</div>
           <div class="result-row"><span>Toplam Fiyat:</span><strong id="camToplamFiyat">0</strong></div>
+          <div class="result-row"><span>Toplam Kar:</span><strong id="camToplamKar">0</strong></div>
         </div>
       </form>
     </section>
@@ -83,6 +95,17 @@
                 <input class="profil-birim" inputmode="decimal" type="number" step="0.01" min="0" placeholder="Örn: 45">
               </div>
             </div>
+            <div class="grid">
+              <div class="field">
+                <label>Girdi Birim Fiyatı (m)</label>
+                <input class="profil-girdi" inputmode="decimal" type="number" step="0.01" min="0" placeholder="Örn: 25">
+              </div>
+            </div>
+            <div class="row-stats profil-stats">
+              <div><span>Satır Toplam:</span><strong class="profil-satir-toplam">0</strong></div>
+              <div><span>Girdi Tutarı:</span><strong class="profil-satir-maliyet">0</strong></div>
+              <div class="profit"><span>Kar:</span><strong class="profil-satir-kar">0</strong></div>
+            </div>
           </div>
         </div>
         <button type="button" id="btnAddProfil" class="add">Yeni profil ölçüsü ekle</button>
@@ -90,6 +113,7 @@
         <div class="results" id="profilResults">
           <div class="result-row"><span>Toplam Profil Metrajı:</span><strong id="profilMetraj">0</strong> m</div>
           <div class="result-row"><span>Toplam Fiyat:</span><strong id="profilToplamFiyat">0</strong></div>
+          <div class="result-row"><span>Toplam Kar:</span><strong id="profilToplamKar">0</strong></div>
         </div>
       </form>
     </section>
@@ -99,6 +123,8 @@
       <div class="summary">
         <div class="summary-row"><span>Toplam Cam Fiyatı:</span><strong id="ozetCamToplam">0</strong></div>
         <div class="summary-row"><span>Toplam Profil Fiyatı:</span><strong id="ozetProfilToplam">0</strong></div>
+        <div class="summary-row"><span>Toplam Cam Karı:</span><strong id="ozetCamKar">0</strong></div>
+        <div class="summary-row"><span>Toplam Profil Karı:</span><strong id="ozetProfilKar">0</strong></div>
         <div class="summary-row"><span>Ara Toplam (KDV hariç):</span><strong id="ozetAraToplam">0</strong></div>
         <div class="summary-row"><span>KDV (%20):</span><strong id="ozetKdv">0</strong></div>
         <hr>

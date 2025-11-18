@@ -46,27 +46,43 @@
   function computeCamTotals() {
     let toplamM2 = 0;
     let toplamFiyat = 0;
+    let toplamKar = 0;
+    const rows = [];
     $$(".cam-item").forEach((row) => {
       const enCm = parseNum(row.querySelector(".cam-en")?.value);
       const boyCm = parseNum(row.querySelector(".cam-boy")?.value);
       const adet = parseNum(row.querySelector(".cam-adet")?.value);
       const birim = parseNum(row.querySelector(".cam-birim")?.value);
+      const girdiBirim = parseNum(row.querySelector(".cam-girdi")?.value);
       const en = enCm / 100;
       const boy = boyCm / 100;
       const parcaM2 = en * boy;
       const satirToplamM2 = parcaM2 * adet;
       const satirToplam = satirToplamM2 * birim;
+      const satirMaliyet = satirToplamM2 * girdiBirim;
+      const satirKar = satirToplam - satirMaliyet;
       toplamM2 += satirToplamM2;
       toplamFiyat += satirToplam;
+      toplamKar += satirKar;
+      rows.push({ row, satirToplamM2, satirToplam, satirMaliyet, satirKar });
     });
-    return { toplamM2, toplamFiyat };
+    return { toplamM2, toplamFiyat, toplamKar, rows };
   }
 
   function updateCam() {
-    const { toplamM2, toplamFiyat } = computeCamTotals();
+    const { toplamM2, toplamFiyat, toplamKar, rows } = computeCamTotals();
+    rows.forEach(({ row, satirToplam, satirMaliyet, satirKar }) => {
+      const toplamEl = row.querySelector(".cam-satir-toplam");
+      const maliyetEl = row.querySelector(".cam-satir-maliyet");
+      const karEl = row.querySelector(".cam-satir-kar");
+      if (toplamEl) toplamEl.textContent = formatCurrency(satirToplam);
+      if (maliyetEl) maliyetEl.textContent = formatCurrency(satirMaliyet);
+      if (karEl) karEl.textContent = formatCurrency(satirKar);
+    });
     $("#camToplamM2").textContent = formatNumber(toplamM2);
     $("#camToplamFiyat").textContent = formatCurrency(toplamFiyat);
-    return { toplamM2, toplamFiyat };
+    $("#camToplamKar").textContent = formatCurrency(toplamKar);
+    return { toplamM2, toplamFiyat, toplamKar };
   }
 
   function addCamRow() {
@@ -93,6 +109,17 @@
           <label>m² Birim Fiyatı</label>
           <input class="cam-birim" inputmode="decimal" type="number" step="0.01" min="0" placeholder="Örn: 750">
         </div>
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label>Girdi m² Fiyatı</label>
+          <input class="cam-girdi" inputmode="decimal" type="number" step="0.01" min="0" placeholder="Örn: 500">
+        </div>
+      </div>
+      <div class="row-stats cam-stats">
+        <div><span>Satır Toplam:</span><strong class="cam-satir-toplam">0</strong></div>
+        <div><span>Girdi Tutarı:</span><strong class="cam-satir-maliyet">0</strong></div>
+        <div class="profit"><span>Kar:</span><strong class="cam-satir-kar">0</strong></div>
       </div>`;
     container.appendChild(div);
   }
@@ -142,26 +169,42 @@
   function computeProfilTotals() {
     let metraj = 0;
     let toplamFiyat = 0;
+    let toplamKar = 0;
+    const rows = [];
     $$(".profil-item").forEach((row) => {
       const enCm = parseNum(row.querySelector(".profil-en")?.value);
       const boyCm = parseNum(row.querySelector(".profil-boy")?.value);
       const adet = parseNum(row.querySelector(".profil-adet")?.value);
       const birim = parseNum(row.querySelector(".profil-birim")?.value);
+      const girdiBirim = parseNum(row.querySelector(".profil-girdi")?.value);
       const en = enCm / 100;
       const boy = boyCm / 100;
       const satirMetraj = 2 * (en + boy) * adet;
       const satirToplam = satirMetraj * birim;
+      const satirMaliyet = satirMetraj * girdiBirim;
+      const satirKar = satirToplam - satirMaliyet;
       metraj += satirMetraj;
       toplamFiyat += satirToplam;
+      toplamKar += satirKar;
+      rows.push({ row, satirToplam, satirMaliyet, satirKar });
     });
-    return { metraj, toplamFiyat };
+    return { metraj, toplamFiyat, toplamKar, rows };
   }
 
   function updateProfil() {
-    const { metraj, toplamFiyat } = computeProfilTotals();
+    const { metraj, toplamFiyat, toplamKar, rows } = computeProfilTotals();
+    rows.forEach(({ row, satirToplam, satirMaliyet, satirKar }) => {
+      const toplamEl = row.querySelector(".profil-satir-toplam");
+      const maliyetEl = row.querySelector(".profil-satir-maliyet");
+      const karEl = row.querySelector(".profil-satir-kar");
+      if (toplamEl) toplamEl.textContent = formatCurrency(satirToplam);
+      if (maliyetEl) maliyetEl.textContent = formatCurrency(satirMaliyet);
+      if (karEl) karEl.textContent = formatCurrency(satirKar);
+    });
     $("#profilMetraj").textContent = formatNumber(metraj);
     $("#profilToplamFiyat").textContent = formatCurrency(toplamFiyat);
-    return { metraj, toplamFiyat };
+    $("#profilToplamKar").textContent = formatCurrency(toplamKar);
+    return { metraj, toplamFiyat, toplamKar };
   }
 
   function addProfilRow() {
@@ -188,6 +231,17 @@
           <label>Profil Birim Fiyatı (m)</label>
           <input class="profil-birim" inputmode="decimal" type="number" step="0.01" min="0" placeholder="Örn: 45">
         </div>
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label>Girdi Birim Fiyatı (m)</label>
+          <input class="profil-girdi" inputmode="decimal" type="number" step="0.01" min="0" placeholder="Örn: 25">
+        </div>
+      </div>
+      <div class="row-stats profil-stats">
+        <div><span>Satır Toplam:</span><strong class="profil-satir-toplam">0</strong></div>
+        <div><span>Girdi Tutarı:</span><strong class="profil-satir-maliyet">0</strong></div>
+        <div class="profit"><span>Kar:</span><strong class="profil-satir-kar">0</strong></div>
       </div>`;
     container.appendChild(div);
   }
@@ -205,12 +259,16 @@
     const profil = updateProfil();
     const camToplam = cam.toplamFiyat || 0;
     const profilToplam = profil.toplamFiyat || 0;
+    const camKar = cam.toplamKar || 0;
+    const profilKar = profil.toplamKar || 0;
     const araToplam = camToplam + profilToplam; // KDV hariç
     const kdv = araToplam * 0.20;
     const genel = araToplam + kdv; // KDV dahil
 
     $("#ozetCamToplam").textContent = formatCurrency(camToplam);
     $("#ozetProfilToplam").textContent = formatCurrency(profilToplam);
+    $("#ozetCamKar").textContent = formatCurrency(camKar);
+    $("#ozetProfilKar").textContent = formatCurrency(profilKar);
     $("#ozetAraToplam").textContent = formatCurrency(araToplam);
     $("#ozetKdv").textContent = formatCurrency(kdv);
     $("#ozetGenelToplam").textContent = formatCurrency(genel);
