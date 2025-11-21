@@ -154,6 +154,190 @@
     updateProfil();
   }
 
+  // OCR and measurement extraction
+  async function processMeasurementImage(file) {
+    const statusEl = $("#uploadStatus");
+    const btn = $("#btnUploadMeasurements");
+    
+    if (!file) return;
+    
+    btn.disabled = true;
+    statusEl.style.display = "block";
+    statusEl.className = "upload-status processing";
+    statusEl.textContent = "Ölçü kağıdı işleniyor... Lütfen bekleyin.";
+
+    try {
+      // For PDF files, we'll convert to image first (simplified: only handle images for now)
+      if (file.type === "application/pdf") {
+        statusEl.className = "upload-status error";
+        statusEl.textContent = "PDF desteği yakında eklenecek. Lütfen resim formatı (JPG, PNG) kullanın.";
+        btn.disabled = false;
+        return;
+      }
+
+      // Create image element to process
+      const imageUrl = URL.createObjectURL(file);
+      const img = new Image();
+      img.src = imageUrl;
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      statusEl.textContent = "OCR ile metin çıkarılıyor...";
+
+      // Use Tesseract.js for OCR
+      const { data: { text } } = await Tesseract.recognize(img, 'tur+eng', {
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            statusEl.textContent = `İşleniyor... ${Math.round(m.progress * 100)}%`;
+          }
+        }
+      });
+
+      URL.revokeObjectURL(imageUrl);
+
+      statusEl.textContent = "Ölçüler bulunuyor...";
+
+      // Parse measurements from text
+      const measurements = parseMeasurementsFromText(text);
+      
+      if (measurements.length === 0) {
+        statusEl.className = "upload-status error";
+        statusEl.textContent = "Ölçü bulunamadı. Lütfen net bir görüntü yükleyin veya manuel girin.";
+        btn.disabled = false;
+        return;
+      }
+
+      // Auto-populate form with extracted measurements
+      populateMeasurements(measurements);
+
+      statusEl.className = "upload-status success";
+      statusEl.textContent = `✓ ${measurements.length} ölçü başarıyla eklendi!`;
+      
+      setTimeout(() => {
+        statusEl.style.display = "none";
+      }, 3000);
+
+      updateCam();
+
+    } catch (error) {
+      console.error("OCR Error:", error);
+      statusEl.className = "upload-status error";
+      statusEl.textContent = "Hata: " + (error.message || "Ölçü kağıdı işlenirken bir sorun oluştu.");
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function parseMeasurementsFromText(text) {
+    const measurements = [];
+    const seen = new Set(); // Track seen measurements to avoid duplicates
+    
+    // Normalize text: replace common OCR mistakes
+    let normalized = text
+      .replace(/[|]/g, 'l') // | to l
+      .replace(/[O0]/g, '0') // O to 0 in numbers
+      .replace(/[Il]/g, '1') // I, l to 1
+      .replace(/\s+/g, ' ')
+      .toLowerCase();
+
+    // Helper function to create a key for deduplication
+    const createKey = (en, boy, adet) => `${Math.round(en)}_${Math.round(boy)}_${adet}`;
+
+    // Helper function to add measurement if valid and not duplicate
+    const addMeasurement = (en, boy, adet) => {
+      // Validate: En and Boy should be reasonable (10-5000 cm), Adet should be reasonable (1-1000)
+      if (en >= 10 && en <= 5000 && boy >= 10 && boy <= 5000 && adet >= 1 && adet <= 1000) {
+        const key = createKey(en, boy, adet);
+        if (!seen.has(key)) {
+          seen.add(key);
+          measurements.push({ en, boy, adet });
+        }
+      }
+    };
+
+    // Pattern 1: "En: XXX Boy: XXX Adet: XXX" format
+    const pattern1 = /en\s*:?\s*(\d+(?:[,.]?\d+)?)\s*(?:cm|m)?.*?boy\s*:?\s*(\d+(?:[,.]?\d+)?)\s*(?:cm|m)?.*?adet\s*:?\s*(\d+)/gi;
+    let match;
+    
+    while ((match = pattern1.exec(normalized)) !== null) {
+      const en = parseFloat(match[1].replace(',', '.'));
+      const boy = parseFloat(match[2].replace(',', '.'));
+      const adet = parseInt(match[3], 10);
+      addMeasurement(en, boy, adet);
+    }
+
+    // Pattern 2: "XXXxXXXxXXX" or "XXX X XXX X XXX" format (En x Boy x Adet)
+    const pattern2 = /(\d+(?:[,.]?\d+)?)\s*[x×*]\s*(\d+(?:[,.]?\d+)?)\s*[x×*]\s*(\d+)/gi;
+    while ((match = pattern2.exec(normalized)) !== null) {
+      const en = parseFloat(match[1].replace(',', '.'));
+      const boy = parseFloat(match[2].replace(',', '.'));
+      const adet = parseInt(match[3], 10);
+      addMeasurement(en, boy, adet);
+    }
+
+    // Pattern 3: Three consecutive numbers on same line (En Boy Adet)
+    const lines = normalized.split('\n').filter(l => l.trim());
+    for (const line of lines) {
+      const numbers = line.match(/\d+(?:[,.]?\d+)?/g);
+      if (numbers && numbers.length >= 3) {
+        // Try different combinations: first three, or groups of three
+        for (let i = 0; i <= numbers.length - 3; i++) {
+          const en = parseFloat(numbers[i].replace(',', '.'));
+          const boy = parseFloat(numbers[i + 1].replace(',', '.'));
+          const adet = parseInt(numbers[i + 2], 10);
+          if (!isNaN(en) && !isNaN(boy) && !isNaN(adet)) {
+            addMeasurement(en, boy, adet);
+          }
+        }
+      }
+    }
+
+    // Pattern 4: Tab-separated or multiple spaces (En   Boy   Adet)
+    for (const line of lines) {
+      const parts = line.split(/\s{2,}|\t/).filter(p => p.trim());
+      if (parts.length >= 3) {
+        const num1 = parseFloat(parts[0].replace(/[^\d,.]/g, '').replace(',', '.'));
+        const num2 = parseFloat(parts[1].replace(/[^\d,.]/g, '').replace(',', '.'));
+        const num3 = parseInt(parts[2].replace(/[^\d]/g, ''), 10);
+        if (!isNaN(num1) && !isNaN(num2) && !isNaN(num3)) {
+          addMeasurement(num1, num2, num3);
+        }
+      }
+    }
+
+    return measurements;
+  }
+
+  function populateMeasurements(measurements) {
+    if (measurements.length === 0) return;
+
+    // Ensure we have enough rows
+    const currentRows = $$(".cam-item").length;
+    if (measurements.length > currentRows) {
+      for (let i = currentRows; i < measurements.length; i++) {
+        addCamRow();
+      }
+    }
+
+    // Populate each row
+    const rows = $$(".cam-item");
+    measurements.forEach((m, idx) => {
+      if (idx >= rows.length) return;
+      
+      const row = rows[idx];
+      const enInput = row.querySelector(".cam-en");
+      const boyInput = row.querySelector(".cam-boy");
+      const adetInput = row.querySelector(".cam-adet");
+      
+      if (enInput && m.en) enInput.value = m.en;
+      if (boyInput && m.boy) boyInput.value = m.boy;
+      if (adetInput && m.adet) adetInput.value = m.adet;
+    });
+  }
+
   function setupCam() {
     $("#camItems").addEventListener("input", updateCam);
     $("#camItems").addEventListener("change", updateCam);
@@ -162,6 +346,24 @@
     if (copyBtn) {
       copyBtn.addEventListener("click", copyCamToProfil);
     }
+    
+    // Setup upload button
+    const uploadBtn = $("#btnUploadMeasurements");
+    const uploadInput = $("#uploadMeasurements");
+    if (uploadBtn && uploadInput) {
+      uploadBtn.addEventListener("click", () => {
+        uploadInput.click();
+      });
+      uploadInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          processMeasurementImage(file);
+          // Reset input to allow re-uploading same file
+          uploadInput.value = "";
+        }
+      });
+    }
+    
     updateCam();
   }
 

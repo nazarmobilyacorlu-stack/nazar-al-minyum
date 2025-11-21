@@ -6,6 +6,9 @@
   <title>nazar alüminyum</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="favicon.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#e0f2ff">
 </head>
 <body>
   <header class="topbar">
@@ -58,6 +61,11 @@
               <div class="profit"><span>Kar:</span><strong class="cam-satir-kar">0</strong></div>
             </div>
           </div>
+        </div>
+        <div class="upload-section">
+          <input type="file" id="uploadMeasurements" accept="image/*,.pdf" style="display: none;">
+          <button type="button" id="btnUploadMeasurements" class="upload-btn">📄 Ölçü Kağıdını Yükle</button>
+          <div id="uploadStatus" class="upload-status" style="display: none;"></div>
         </div>
         <button type="button" id="btnAddCam" class="add">Yeni cam ölçüsü ekle</button>
         <button type="button" id="btnCopyCamToProfil" class="copy">Ölçüleri kopyala</button>
@@ -141,6 +149,7 @@
     <small>© 2025 nazar alüminyum</small>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="app.js"></script>
   
 </body>
